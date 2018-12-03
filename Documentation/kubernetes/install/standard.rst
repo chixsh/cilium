@@ -234,7 +234,9 @@ accordingly with your changes.
 * ``debug`` - Sets to run Cilium in full debug mode, it can be changed at
   runtime;
 
-* ``disable-ipv4`` - Disables IPv4 in Cilium and endpoints managed by Cilium;
+* ``enable-ipv4`` - Enable IPv4 addressing support
+
+* ``enable-ipv6`` - Enable IPv6 addressing support
 
 * ``clean-cilium-state`` - Removes any Cilium state, e.g. BPF policy maps,
   before starting the Cilium agent;

@@ -369,7 +369,7 @@ func (d *Daemon) setHostAddresses() error {
 		return nil, nil
 	}
 
-	if !option.Config.IPv4Disabled {
+	if option.Config.EnableIPv4 {
 		hostV4Addr, err := getAddr(netlink.FAMILY_V4)
 		if err != nil {
 			return err
@@ -485,7 +485,7 @@ func (d *Daemon) compileBase() error {
 	ipam.ReserveLocalRoutes()
 	node.InstallHostRoutes()
 
-	if !option.Config.IPv4Disabled {
+	if option.Config.EnableIPv4 {
 		// Always remove masquerade rule and then re-add it if required
 		iptables.RemoveRules()
 		if err := iptables.InstallRules(); err != nil {
@@ -574,7 +574,7 @@ func (d *Daemon) init() error {
 		if _, err := lbmap.RRSeq6Map.OpenOrCreate(); err != nil {
 			return err
 		}
-		if !option.Config.IPv4Disabled {
+		if option.Config.EnableIPv4 {
 			if _, err := lbmap.Service4Map.OpenOrCreate(); err != nil {
 				return err
 			}
@@ -602,7 +602,7 @@ func (d *Daemon) init() error {
 				return err
 			}
 
-			if !option.Config.IPv4Disabled {
+			if option.Config.EnableIPv4 {
 				if err := lbmap.Service4Map.DeleteAll(); err != nil {
 					return err
 				}
@@ -639,7 +639,7 @@ func createNodeConfigHeaderfile() error {
 		" * Router-IPv6: %s\n",
 		hostIP.String(), routerIP.String())
 
-	if option.Config.IPv4Disabled {
+	if !option.Config.EnableIPv4 {
 		fw.WriteString(" */\n\n")
 	} else {
 		fmt.Fprintf(fw, ""+
@@ -651,7 +651,7 @@ func createNodeConfigHeaderfile() error {
 
 	fw.WriteString(common.FmtDefineComma("ROUTER_IP", routerIP))
 
-	if !option.Config.IPv4Disabled {
+	if option.Config.EnableIPv4 {
 		ipv4GW := node.GetInternalIPv4()
 		loopbackIPv4 := node.GetIPv4Loopback()
 		fmt.Fprintf(fw, "#define IPV4_GATEWAY %#x\n", byteorder.HostSliceToNetwork(ipv4GW, reflect.Uint32).(uint32))
@@ -994,7 +994,7 @@ func NewDaemon() (*Daemon, *endpointRestoreState, error) {
 	log.Infof("  IPv4 allocation prefix: %s", node.GetIPv4AllocRange())
 	log.Infof("  IPv6 router address: %s", node.GetIPv6Router())
 
-	if !option.Config.IPv4Disabled {
+	if option.Config.EnableIPv4 {
 		// Allocate IPv4 service loopback IP
 		loopbackIPv4, _, err := ipam.AllocateNext("ipv4")
 		if err != nil {
@@ -1174,7 +1174,7 @@ func (h *patchConfig) Handle(params PatchConfigParams) middleware.Responder {
 }
 
 func (d *Daemon) getNodeAddressing() *models.NodeAddressing {
-	return node.GetNodeAddressing(!option.Config.IPv4Disabled)
+	return node.GetNodeAddressing(option.Config.EnableIPv4)
 }
 
 type getConfig struct {
