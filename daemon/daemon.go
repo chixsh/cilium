@@ -809,9 +809,6 @@ func createPrefixLengthCounter() *counter.PrefixLengthCounter {
 
 // NewDaemon creates and returns a new Daemon with the parameters set in c.
 func NewDaemon() (*Daemon, *endpointRestoreState, error) {
-	// Prepopulate option.Config with options from CLI.
-	populateConfig()
-
 	// Validate the daemon-specific global options.
 	if err := option.Config.Validate(); err != nil {
 		return nil, nil, fmt.Errorf("invalid daemon configuration: %s", err)

@@ -608,6 +608,9 @@ func initEnv(cmd *cobra.Command) {
 	log.Info("|___|_|_|_|___|_|_|_|")
 	log.Infof("Cilium %s", version.Version)
 
+	// Prepopulate option.Config with options from CLI.
+	populateConfig()
+
 	if viper.GetBool(option.LogSystemLoadConfigName) {
 		loadinfo.StartBackgroundLogger()
 	}
